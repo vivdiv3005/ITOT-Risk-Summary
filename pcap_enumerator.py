@@ -377,7 +377,17 @@ def to_csv_bytes(assets: list[dict]) -> bytes:
                 row[k] = v
         w.writerow(row)
     return buf.getvalue().encode()
-
+def to_json_bytes(assets: list[dict]) -> bytes:
+    safe = []
+    for a in assets:
+        row = {}
+        for k, v in a.items():
+            if isinstance(v, set):
+                row[k] = list(v)
+            else:
+                row[k] = v
+        safe.append(row)
+    return json.dumps(safe, indent=2).encode()
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  PAGE CONFIG & STYLES
