@@ -366,13 +366,17 @@ def to_csv_bytes(assets: list[dict]) -> bytes:
     w = csv.DictWriter(buf, fieldnames=fields)
     w.writeheader()
     for a in assets:
-        row = {k: (", ".join(v) if isinstance(v, list) else v) for k,v in a.items() if k in fields}
+        row = {}
+        for k, v in a.items():
+            if k not in fields:
+                continue
+            if isinstance(v, list):
+                # Convert every item to string before joining
+                row[k] = ", ".join(str(i) for i in v)
+            else:
+                row[k] = v
         w.writerow(row)
     return buf.getvalue().encode()
-
-
-def to_json_bytes(assets: list[dict]) -> bytes:
-    return json.dumps(assets, indent=2).encode()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
